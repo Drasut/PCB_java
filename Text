@@ -1,0 +1,19 @@
+Electronic Circuit Design 
+ 
+Requirement: 
+Laying out basic electronic components on a grid plane (PCB board), and providing non-intersecting connections, 
+Loading and saving design projects, 
+Providing a shopping list for purchasing parts required to solder up a real circuit.  
+ 
+Design: som den vi får. Listan med produkter ska skrivas ut ett nytt fönster. Ska vara gridd. 
+Uml:  
+Komponenter och hur de pratar med varann: Sladdar sa ej korsas, komponenterna ska se olika ut. Ram som visar var kortet är? 
+ 
+ 
+ 
+Komma ihåg: 
+http://www.wikihow.com/Make-a-GUI-Grid-in-Java 
+ 
+ 
+ 
+ 
