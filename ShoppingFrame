@@ -1,0 +1,33 @@
+package graphed;
+
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+
+/**
+ * Generates a window that will change/update when you add or remove a component 
+ * in the circuit. Later you will use this to do a shoppinglist
+ * @author Elin
+ *
+ */
+
+public class ShoppingFrame extends JFrame {
+	private Graph graph;
+	
+	public ShoppingFrame(final Graph graph){
+		setSize(300,400);
+		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLocation(1200,0);
+		setLayout(new BorderLayout());
+		
+		this.graph = graph;
+		
+		//JFrame frame = new JFrame();
+		
+	}
+}
