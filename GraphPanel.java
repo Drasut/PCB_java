@@ -1,5 +1,3 @@
-package graphed;
-
 import java.awt.*;
 import java.awt.geom.*;
 import java.awt.event.*;
@@ -24,18 +22,17 @@ public class GraphPanel extends JComponent {
 
 		addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent event) {
-				//Point2D mousePoint = event.getPoint();
-				Point2D mousePoint = moveOnGrid(event);
+				Point2D mousePoint = event.getPoint();
 				Node n = graph.findNode(mousePoint);
 				Edge e = graph.findEdge(mousePoint);
 				Object tool = toolBar.getSelectedTool();
-				if (tool == null) // select
+				if (tool == null)
 				{
 					if (e != null) {
 						selected = e;
 					} else if (n != null) {
 						selected = n;
-						dragStartPoint = mousePoint;
+						dragStartPoint = moveOnGrid(event);
 						dragStartBounds = n.getBounds();
 					} else {
 						selected = null;
@@ -44,15 +41,23 @@ public class GraphPanel extends JComponent {
 				else if (tool instanceof Node) {
 					Node prototype = (Node) tool;
 					Node newNode = (Node) prototype.clone();
-					boolean added = graph.add(newNode, mousePoint);
-					if (added) {
-						selected = newNode;
-						dragStartPoint = mousePoint;
-						dragStartBounds = newNode.getBounds();
-					} else if (n != null) {
-						selected = n;
-						dragStartPoint = mousePoint;
-						dragStartBounds = n.getBounds();
+					newNode.translate(moveOnGrid(event).getX(), moveOnGrid(event).getY());
+					boolean skip=false; 							// so you cant put a component over a another component
+					for(Node nod:graph.getNodes())
+						if(nod.getBounds().intersects(newNode.getBounds()))
+							skip=true;
+					if(!skip)
+					{
+						boolean added = graph.add(newNode, moveOnGrid(event));
+						if (added) {
+							selected = newNode;
+							dragStartPoint = moveOnGrid(event);
+							dragStartBounds = newNode.getBounds();
+						} else if (n != null) {
+							selected = n;
+							dragStartPoint = mousePoint;
+							dragStartBounds = n.getBounds();
+						}
 					}
 				} 
 				else if (tool instanceof Edge) {
@@ -66,10 +71,15 @@ public class GraphPanel extends JComponent {
 			public void mouseReleased(MouseEvent event) {
 				Object tool = toolBar.getSelectedTool();
 				if (rubberBandStart != null) {
+					Boolean accepted=true;
 					Point2D mousePoint = event.getPoint();
 					Edge prototype = (Edge) tool;
 					Edge newEdge = (Edge) prototype.clone();
-					if (graph.connect(newEdge, rubberBandStart, mousePoint))
+					Line2D line = new Line2D.Double(rubberBandStart,mousePoint);
+					for(Edge edg: graph.getEdges())
+						if(line.intersectsLine(edg.getConnectionPoints()))
+							accepted=false;
+					if (accepted && graph.connect(newEdge, rubberBandStart, mousePoint))
 						selected = newEdge;
 				}
 				validate();
@@ -83,7 +93,7 @@ public class GraphPanel extends JComponent {
 
 		addMouseMotionListener(new MouseMotionAdapter() {
 			public void mouseDragged(MouseEvent event) {
-				Point2D mousePoint = event.getPoint();
+				Point2D mousePoint = moveOnGrid(event);
 				if (dragStartBounds != null) {
 					if (selected instanceof Node) {
 						Node n = (Node) selected;
@@ -129,23 +139,18 @@ public class GraphPanel extends JComponent {
 	/** own
 	 * Draw the grid in the background
 	 */
-	public void drawGrid(Graphics2D g) {
-		for (int k = 0; k < 800; k+=20){
-			g.drawLine(0, k , 1200, k );
-			g.setColor(Color.LIGHT_GRAY);
-		}
-
-		for (int k = 0; k < 1200; k+=20){
-			g.drawLine(k , 0, k , 1200);
-			g.setColor(Color.LIGHT_GRAY);
-		}
+	private void drawGrid(Graphics2D g) {
+		g.setColor(Color.LIGHT_GRAY);
+		for (int i = 0; i < this.getWidth(); i+=20)
+			for (int k = 0; k < this.getHeight(); k+=20)
+				g.drawRect(i, k, 2, 2);
 	}
 	
 	/** own
 	 * Moves the component to a corner in the grid
 	 * @return point p
 	 */
-	public Point moveOnGrid(MouseEvent event){
+	private Point moveOnGrid(MouseEvent event){
 		Point2D mousePoint = event.getPoint();
 		Point p=new Point();
 		double x = mousePoint.getX();
@@ -200,3 +205,6 @@ public class GraphPanel extends JComponent {
 	private Object selected;
 	private static final Color PURPLE = new Color(0.7f, 0.4f, 0.7f);
 }
+
+
+
