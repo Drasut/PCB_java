@@ -13,12 +13,31 @@ public class RectangleNode implements Node {
 	 * @param aColor
 	 *            the fill color
 	 */
-	public RectangleNode(Color aColor) {
+	public RectangleNode(Color aColor, String n, int p) {
 		size = DEFAULT_SIZE;
 		x = 0;
 		y = 0;
 		color = aColor;
+		name = n;
+		price =p;
 	}
+	
+	/** own
+	 * Return the price of the component
+	 * @return price
+	 */
+	public int getPrice(){
+		return price;
+	}
+	
+	/** own
+	 *  Return the name of the component
+	 * @return name
+	 */
+	public String getName(){
+		return name;
+	}
+	
 
 	public Object clone() {
 		try {
@@ -27,11 +46,14 @@ public class RectangleNode implements Node {
 			return null;
 		}
 	}
+	/**own
+	 * Draws a rectangle with 2 small circle, one at each side, that are one component. 
+	 */
 
 	public void draw(Graphics2D g2) {
 		Rectangle2D rec = new Rectangle2D.Double(x, y, size, size);
-		Ellipse2D e1 = new Ellipse2D.Double(x-14, y+15, size/3, size/3);
-		Ellipse2D e2 = new Ellipse2D.Double(x+40, y+15, size/3, size/3);
+		Ellipse2D e1 = new Ellipse2D.Double(x-20, y+10, size/2, size/2);
+		Ellipse2D e2 = new Ellipse2D.Double(x+40, y+10, size/2, size/2);
 		Color oldColor = g2.getColor();
 		g2.setColor(color);
 		g2.fill(rec);
@@ -55,21 +77,35 @@ public class RectangleNode implements Node {
 		return new Rectangle2D.Double(x, y, size, size);
 	}
 
+	/**
+	 * Calculate the shortest way for the line and returns it
+	 */
 	public Point2D getConnectionPoint(Point2D other) {
-		double centerX = x + size/2;
-		double centerY = y + size/2;
-		double dx = other.getX() - centerX;
-		double dy = other.getY() - centerY;
-		double distance = Math.sqrt(dx * dx + dy * dy);
-		if (distance == 0)
+		double centerXleft = x-20 + size/2;
+		double centerYleft = y+10 + size/2;
+		double centerXright = x+40 + size/2;
+		double centerYright = y+10 + size/2;
+		double dxLeft = other.getX() - centerXleft;
+		double dyLeft = other.getY() - centerYleft;
+		double dxRight = other.getX() - centerXright;
+		double dyRight = other.getY() - centerYright;
+		double distanceLeft = Math.sqrt(dxLeft*dxLeft+dyLeft*dyLeft);
+		double distanceRight = Math.sqrt(dxRight*dxRight+dyRight*dyRight);
+		if (distanceLeft == 0 || distanceRight == 0)
 			return other;
+		else if(distanceLeft > distanceRight)
+			return new Point2D.Double(-10+centerXright+dxRight*(2)/distanceRight,-10+centerYright+dyRight*(2)/distanceRight);
 		else
-			return new Point2D.Double(centerX + dx * (size / 2) / distance, centerY + dy * (size / 2) / distance);
+			return new Point2D.Double(-10+centerXleft+dxLeft*(2)/distanceLeft,-10+centerYleft+dyLeft*(2)/distanceLeft);
+		
+
 	}
 
 	private double x;
 	private double y;
 	private double size;
 	private Color color;
+	private String name;
+	private int price;
 	private static final int DEFAULT_SIZE = 40;
 }
