@@ -1,13 +1,19 @@
 package graphed;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
 
 /**
  * Generates a window that will change/update when you add or remove a component 
@@ -20,14 +26,28 @@ public class ShoppingFrame extends JFrame {
 	private Graph graph;
 	
 	public ShoppingFrame(final Graph graph){
-		setSize(300,400);
-		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setLocation(1200,0);
-		setLayout(new BorderLayout());
+
+		//setLayout(new BorderLayout());
 		
 		this.graph = graph;
 		
-		//JFrame frame = new JFrame();
+		JFrame frame = new JFrame();
+		JPanel buttonPanel = new JPanel();
+		JTextArea textA = new JTextArea(" TEST ",20,30);
 		
+		JButton shopItem = new JButton("shop");
+//		shopItem.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent event) {
+//				
+//			}
+//		});
+			
+		buttonPanel.add(shopItem, BorderLayout.EAST);
+			frame.add(textA, BorderLayout.NORTH);
+		frame.add(buttonPanel, BorderLayout.SOUTH);
+		frame.setLocation(1200,0);
+		frame.pack();
+		frame.setVisible(true);
+	
 	}
 }
