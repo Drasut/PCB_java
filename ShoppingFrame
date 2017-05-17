@@ -1,19 +1,31 @@
 package graphed;
 
 import java.awt.BorderLayout;
+
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+
+import com.sun.xml.internal.fastinfoset.util.StringArray;
+
 
 /**
  * Generates a window that will change/update when you add or remove a component 
@@ -22,32 +34,49 @@ import javax.swing.JTextArea;
  *
  */
 
-public class ShoppingFrame extends JFrame {
+public class ShoppingFrame extends JFrame implements componentObserver {
 	private Graph graph;
+	JTextArea textA;
 	
 	public ShoppingFrame(final Graph graph){
-
-		//setLayout(new BorderLayout());
-		
 		this.graph = graph;
-		
 		JFrame frame = new JFrame();
 		JPanel buttonPanel = new JPanel();
-		JTextArea textA = new JTextArea(" TEST ",20,30);
+		textA = new JTextArea(20,30);
 		
 		JButton shopItem = new JButton("shop");
-//		shopItem.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent event) {
-//				
-//			}
-//		});
-			
+		shopItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				saveShopList();
+			}
+		});
+		
+		
 		buttonPanel.add(shopItem, BorderLayout.EAST);
-			frame.add(textA, BorderLayout.NORTH);
+		frame.add(textA, BorderLayout.NORTH);
 		frame.add(buttonPanel, BorderLayout.SOUTH);
 		frame.setLocation(1200,0);
 		frame.pack();
 		frame.setVisible(true);
 	
+	
 	}
+	
+/*EJ KLAR                                                                                                        */
+	private void saveShopList() {
+		JFileChooser fileChooser = new JFileChooser();
+		
+	}
+  	
+	/**
+	* Print out what type of component and the cost. 
+	* When removed, it will update
+	*/
+	public void utdateComponent(List<Node> a) {
+		String s= "";
+		for (int i = 0; i < a.size();i++){
+			s+="Component: " +a.get(i).getName()+  ", with price of "+ a.get(i).getPrice() +" KR. \n";
+		}
+		textA.setText(s);
+	}		
 }
