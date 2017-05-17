@@ -1,0 +1,11 @@
+package graphed;
+
+import java.util.List;
+
+public interface componentObserver {
+	/**
+	 * Updates the observer
+	 * @param a
+	 */
+	void utdateComponent(List<Node> a);
+}
