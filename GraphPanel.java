@@ -49,11 +49,7 @@ public class GraphPanel extends JComponent {
 					Node prototype = (Node) tool;
 					Node newNode = (Node) prototype.clone();
 					newNode.translate(moveOnGrid(event).getX(), moveOnGrid(event).getY());
-					boolean skip = false; 							// so you can't put a component over a another component
-					for(Node nod:graph.getNodes())
-						if(nod.getBounds().intersects(newNode.getBounds()))
-							skip=true;
-					if(!skip)
+					if(IsAllowed(newNode, mousePoint))
 					{
 						boolean added = graph.add(newNode, moveOnGrid(event));
 						if (added) {
@@ -81,17 +77,19 @@ public class GraphPanel extends JComponent {
 
 			public void mouseReleased(MouseEvent event) {
 				Object tool = toolBar.getSelectedTool();
+				Point2D mousePoint = event.getPoint();
 				if (rubberBandStart != null) {
 					boolean accepted=true;						// so you can't put a line over a another line	
-					Point2D mousePoint = event.getPoint();
 					Edge prototype = (Edge) tool;
 					Edge newEdge = (Edge) prototype.clone();
-					Line2D line = new Line2D.Double(rubberBandStart,mousePoint);
-					for(Edge edg: graph.getEdges())
-						if(line.intersectsLine(edg.getConnectionPoints()))
-							accepted=false;
-					if (accepted && graph.connect(newEdge, rubberBandStart, mousePoint))
+					if (IsAllowed(null, mousePoint) && graph.connect(newEdge, rubberBandStart, mousePoint))
 						selected = newEdge;
+				}
+				if (selected instanceof Node) {
+					Node n = (Node) selected;
+					if(!IsAllowed(n, mousePoint))										
+						n.translate(dragStartPoint.getX()-moveOnGrid(event).getX()-(dragStartPoint.getX()-moveOnGrid(event).getX())%20, 
+									dragStartPoint.getY()-moveOnGrid(event).getY()-(dragStartPoint.getY()-moveOnGrid(event).getY())%20);
 				}
 				validate();
 				repaint();
@@ -227,6 +225,41 @@ public class GraphPanel extends JComponent {
 			c.utdateComponent(graph.getNodes());
 	}
 	
+	private boolean IsAllowed(Object o,Point2D mousePoint)
+	{
+		if (o instanceof Node)
+		{
+			Node newNode = (Node)o;
+			for(Node nod:graph.getNodes())
+			{
+				if(nod!=newNode && nod.getBounds().intersects(newNode.getBounds()))
+					return false;
+				for(Edge other: graph.getEdges())
+					if(nod.getBounds().intersectsLine(other.getConnectionPoints())&& !(nod==other.getEnd() || nod==other.getStart()))
+						return false;
+			}
+			for(Edge edg: graph.getEdges())
+			{
+				if(newNode.getBounds().intersectsLine(edg.getConnectionPoints()) && !(newNode==edg.getEnd() || newNode==edg.getStart()))   // fel här
+					return false;
+				for(Edge other: graph.getEdges())
+					if(edg!=other && edg.getConnectionPoints().intersectsLine(other.getConnectionPoints()))
+						return false;
+			}
+			
+		}
+		if(rubberBandStart!=null)
+		{
+			Line2D line = new Line2D.Double(rubberBandStart,mousePoint);
+			for(Edge edg: graph.getEdges())
+				if(line.intersectsLine(edg.getConnectionPoints()))
+					return false;
+			for(Node nod:graph.getNodes())
+				if(!nod.getBounds().intersects(line.getX1(), line.getY1(), 40, 40)&& !nod.getBounds().intersects(line.getX2(), line.getY2(), 40, 40) && nod.getBounds().intersectsLine(line))
+					return false;
+		}
+		return true;
+	}
 
 	private Graph graph;
 	private ToolBar toolBar;
