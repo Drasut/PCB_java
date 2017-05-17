@@ -1,8 +1,12 @@
+package graphed;
+
 import java.awt.*;
 import java.awt.geom.*;
+import java.util.ArrayList;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
+
 
 /**
  * A panel to draw a graph
@@ -19,6 +23,9 @@ public class GraphPanel extends JComponent {
 		toolBar = aToolBar;
 		graph = aGraph;
 		setBackground(Color.WHITE);
+		comp = new ArrayList<componentObserver>();
+		ShoppingFrame frame = new ShoppingFrame(new SimpleGraph());
+		addObserver(frame);
 
 		addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent event) {
@@ -42,7 +49,7 @@ public class GraphPanel extends JComponent {
 					Node prototype = (Node) tool;
 					Node newNode = (Node) prototype.clone();
 					newNode.translate(moveOnGrid(event).getX(), moveOnGrid(event).getY());
-					boolean skip=false; 							// so you cant put a component over a another component
+					boolean skip = false; 							// so you can't put a component over a another component
 					for(Node nod:graph.getNodes())
 						if(nod.getBounds().intersects(newNode.getBounds()))
 							skip=true;
@@ -57,7 +64,10 @@ public class GraphPanel extends JComponent {
 							selected = n;
 							dragStartPoint = mousePoint;
 							dragStartBounds = n.getBounds();
+							
 						}
+/*FIXA IN*/				getInfo();
+
 					}
 				} 
 				else if (tool instanceof Edge) {
@@ -66,12 +76,13 @@ public class GraphPanel extends JComponent {
 				}
 				lastMousePoint = mousePoint;
 				repaint();
+				
 			}
 
 			public void mouseReleased(MouseEvent event) {
 				Object tool = toolBar.getSelectedTool();
 				if (rubberBandStart != null) {
-					Boolean accepted=true;
+					boolean accepted=true;						// so you can't put a line over a another line	
 					Point2D mousePoint = event.getPoint();
 					Edge prototype = (Edge) tool;
 					Edge newEdge = (Edge) prototype.clone();
@@ -195,6 +206,27 @@ public class GraphPanel extends JComponent {
 		return new Dimension((int) bounds.getMaxX(), (int) bounds.getMaxY());
 	}
 	
+	
+	
+/*FIXA IN*/	
+	/** own
+	 * add observers to the list
+	 * @param s
+	 */
+	public void addObserver(componentObserver s) {
+		comp.add(s);
+	}
+	
+	/** own
+	 * gets the information about a component, name and price
+	 * @param p
+	 * @param s
+	 */
+	public void getInfo(){
+		for(componentObserver c :comp)
+			c.utdateComponent(graph.getNodes());
+	}
+	
 
 	private Graph graph;
 	private ToolBar toolBar;
@@ -204,7 +236,5 @@ public class GraphPanel extends JComponent {
 	private Rectangle2D dragStartBounds;
 	private Object selected;
 	private static final Color PURPLE = new Color(0.7f, 0.4f, 0.7f);
+	private ArrayList<componentObserver> comp;
 }
-
-
-
