@@ -56,13 +56,15 @@ public class GraphFrame extends JFrame {
 		deleteItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				panel.removeSelected();
+				panel.getInfo();
+				
 			}
 		});
 		
 		JMenuItem shopItem = new JMenuItem("Shop");
 		openItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
-				
+
 			}
 		});
 	
@@ -130,8 +132,7 @@ public class GraphFrame extends JFrame {
 			}
 		}
 	}
-
-
+	
 
 	private Graph graph;
 	private GraphPanel panel;
